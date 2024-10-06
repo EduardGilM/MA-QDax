@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Tuple, Union
 
 import jax.numpy as jnp
-from brax import jumpy as jp
 from brax.envs import Env, State, Wrapper
 
 _agent_action_mapping = {
@@ -121,11 +120,11 @@ class MultiAgentBraxWrapper(Wrapper):
         self.homogenisation_method = homogenisation_method
         self._kwargs = kwargs
 
-    def step(self, state: State, agent_actions: Dict[int, jp.ndarray]) -> State:
+    def step(self, state: State, agent_actions: Dict[int, jnp.ndarray]) -> State:
         global_action = self.map_agents_to_global_action(agent_actions)
         return self.env.step(state, global_action)
 
-    def obs(self, state: State) -> Dict[int, jp.ndarray]:
+    def obs(self, state: State) -> Dict[int, jnp.ndarray]:
         return self.map_global_obs_to_agents(state.obs)
 
     def get_obs_sizes(self) -> Dict[int, int]:
@@ -155,8 +154,8 @@ class MultiAgentBraxWrapper(Wrapper):
         return {k: v.size for k, v in self.agent_action_mapping.items()}
 
     def map_agents_to_global_action(
-        self, agent_actions: Dict[int, jp.ndarray]
-    ) -> jp.ndarray:
+        self, agent_actions: Dict[int, jnp.ndarray]
+    ) -> jnp.ndarray:
         global_action = jnp.zeros(self.env.action_size)
         for agent_idx, action_indices in self.agent_action_mapping.items():
             if self.parameter_sharing or self.emitter_type == "shared_pool":
@@ -174,7 +173,7 @@ class MultiAgentBraxWrapper(Wrapper):
                 )
         return global_action
 
-    def map_global_obs_to_agents(self, global_obs: jp.ndarray) -> Dict[int, jp.ndarray]:
+    def map_global_obs_to_agents(self, global_obs: jnp.ndarray) -> Dict[int, jnp.ndarray]:
         agent_obs = {}
         for agent_idx, obs_indices in self.agent_obs_mapping.items():
             if self.parameter_sharing or self.emitter_type == "shared_pool":
@@ -204,5 +203,5 @@ class MultiAgentBraxWrapper(Wrapper):
                 agent_obs[agent_idx] = global_obs[obs_indices]
         return agent_obs
 
-    def reset(self, key: jp.ndarray) -> State:
+    def reset(self, key: jnp.ndarray) -> State:
         return self.env.reset(key)
