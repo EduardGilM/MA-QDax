@@ -45,10 +45,12 @@ class MAPElites:
         ],
         emitter: Emitter,
         metrics_function: Callable[[MapElitesRepertoire], Metrics],
+        qd_offset: float = 0.0,
     ) -> None:
         self._scoring_function = scoring_function
         self._emitter = emitter
         self._metrics_function = metrics_function
+        self._qd_offset = qd_offset
 
     @partial(jax.jit, static_argnames=("self",))
     def init(
@@ -130,12 +132,19 @@ class MAPElites:
         )
 
         # scores the offsprings
-        fitnesses, descriptors, extra_scores, random_key = self._scoring_function(
+        fitnesses, descriptors, extra_scores, operation_history, random_key = self._scoring_function(
             genotypes, random_key
         )
 
         # add genotypes in the repertoire
-        repertoire = repertoire.add(genotypes, descriptors, fitnesses, extra_scores)
+        repertoire, operation_metrics = repertoire.add(
+            genotypes,
+            descriptors,
+            fitnesses,
+            extra_scores,
+            operation_history,
+            self._qd_offset,
+        )
 
         # update emitter state after scoring is made
         emitter_state = self._emitter.state_update(
@@ -149,6 +158,16 @@ class MAPElites:
 
         # update the metrics
         metrics = self._metrics_function(repertoire)
+        metrics.update(
+            {
+                "succ_var": operation_metrics["op_count"][0],
+                "succ_mut": operation_metrics["op_count"][1],
+                "succ_cross": operation_metrics["op_count"][2],
+                "imp_var": operation_metrics["fitness_improvement"][0],
+                "imp_mut": operation_metrics["fitness_improvement"][1],
+                "imp_cross": operation_metrics["fitness_improvement"][2],
+            }
+        )
 
         return repertoire, emitter_state, metrics, random_key
 

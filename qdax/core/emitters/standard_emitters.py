@@ -75,7 +75,15 @@ class MixingEmitter(Emitter):
                 x_mutation,
             )
 
-        return genotypes, {}, random_key
+        operation_history = jnp.concatenate(
+            [
+                jnp.zeros(n_variation, dtype=jnp.int32),
+                jnp.ones(n_mutation, dtype=jnp.int32),
+            ],
+            axis=0,
+        )
+
+        return genotypes, {}, random_key, operation_history
 
     @property
     def batch_size(self) -> int:
