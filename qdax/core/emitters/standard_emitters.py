@@ -31,7 +31,7 @@ class MixingEmitter(Emitter):
         repertoire: Repertoire,
         emitter_state: Optional[EmitterState],
         random_key: RNGKey,
-    ) -> Tuple[Genotype, ExtraScores, RNGKey]:
+    ) -> Tuple[Genotype, ExtraScores, RNGKey, jnp.ndarray]:
         """
         Emitter that performs both mutation and variation. Two batches of
         variation_percentage * batch_size genotypes are sampled in the repertoire,
