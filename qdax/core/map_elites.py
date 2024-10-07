@@ -127,12 +127,12 @@ class MAPElites:
             a new jax PRNG key
         """
         # generate offsprings with the emitter
-        genotypes, extra_info, random_key = self._emitter.emit(
+        genotypes, extra_info, random_key, operation_history = self._emitter.emit(
             repertoire, emitter_state, random_key
         )
 
         # scores the offsprings
-        fitnesses, descriptors, extra_scores, operation_history, random_key = self._scoring_function(
+        fitnesses, descriptors, extra_scores, random_key = self._scoring_function(
             genotypes, random_key
         )
 
