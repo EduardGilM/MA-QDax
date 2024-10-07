@@ -31,7 +31,7 @@ class MixingEmitter(Emitter):
         repertoire: Repertoire,
         emitter_state: Optional[EmitterState],
         random_key: RNGKey,
-    ) -> Tuple[Genotype, ExtraScores, RNGKey, jnp.ndarray]:
+    ) -> Tuple[Genotype, ExtraScores, RNGKey]:
         """
         Emitter that performs both mutation and variation. Two batches of
         variation_percentage * batch_size genotypes are sampled in the repertoire,
@@ -75,15 +75,7 @@ class MixingEmitter(Emitter):
                 x_mutation,
             )
 
-        operation_history = jnp.concatenate(
-            [
-                jnp.zeros(n_variation, dtype=jnp.int32),
-                jnp.ones(n_mutation, dtype=jnp.int32),
-            ],
-            axis=0,
-        )
-
-        return genotypes, {}, random_key, operation_history
+        return genotypes, {}, random_key
 
     @property
     def batch_size(self) -> int:

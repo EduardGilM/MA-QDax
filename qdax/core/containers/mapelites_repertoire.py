@@ -274,9 +274,7 @@ class MapElitesRepertoire(flax.struct.PyTreeNode):
         batch_of_descriptors: Descriptor,
         batch_of_fitnesses: Fitness,
         batch_of_extra_scores: Optional[ExtraScores] = None,
-        operation_history: Optional[jnp.ndarray] = None,
-        qd_offset: float = 0.0,
-    ) -> tuple[MapElitesRepertoire, dict[str, jnp.ndarray]]:
+    ) -> MapElitesRepertoire:
         """
         Add a batch of elements to the repertoire.
 
@@ -322,28 +320,6 @@ class MapElitesRepertoire(flax.struct.PyTreeNode):
         )
         addition_condition = batch_of_fitnesses > current_fitnesses
 
-         # aggregate successful operations
-        op_count = None
-        fitness_improvement = None
-        if operation_history is not None:
-            # Mark operations that were not successful
-            operation_filtered = jnp.where(
-                addition_condition.squeeze(axis=-1), operation_history, 3
-            )
-            # Get the number of times each operation was successful
-            op_count = jnp.bincount(operation_filtered, length=3)
-            # Fitness delta
-            fitness_delta = jnp.nan_to_num(
-                batch_of_fitnesses - current_fitnesses,
-                posinf=qd_offset + batch_of_fitnesses,
-            ).squeeze(axis=-1)
-            # Get total fitness improvement by operation type
-            fitness_improvement = jnp.bincount(
-                operation_filtered,
-                weights=fitness_delta,
-                length=3,
-            )
-
         # assign fake position when relevant : num_centroids is out of bound
         batch_of_indices = jnp.where(
             addition_condition, batch_of_indices, num_centroids
@@ -366,16 +342,12 @@ class MapElitesRepertoire(flax.struct.PyTreeNode):
             batch_of_descriptors
         )
 
-        return (
-            MapElitesRepertoire(
-                genotypes=new_repertoire_genotypes,
-                fitnesses=new_fitnesses,
-                descriptors=new_descriptors,
-                centroids=self.centroids,
-            ),
-            {"op_count": op_count, "fitness_improvement": fitness_improvement},
+        return MapElitesRepertoire(
+            genotypes=new_repertoire_genotypes,
+            fitnesses=new_fitnesses,
+            descriptors=new_descriptors,
+            centroids=self.centroids,
         )
-
 
     @classmethod
     def init(
@@ -421,9 +393,7 @@ class MapElitesRepertoire(flax.struct.PyTreeNode):
         repertoire = cls.init_default(genotype=first_genotype, centroids=centroids)
 
         # add initial population to the repertoire
-        new_repertoire, _ = repertoire.add(
-            genotypes, descriptors, fitnesses, extra_scores
-        )
+        new_repertoire = repertoire.add(genotypes, descriptors, fitnesses, extra_scores)
 
         return new_repertoire  # type: ignore
 
