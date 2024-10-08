@@ -1,5 +1,5 @@
 import functools
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional, Union, Dict
 
 from brax.v1.envs import Env, _envs
 from brax.v1.envs.wrappers import (
@@ -7,6 +7,11 @@ from brax.v1.envs.wrappers import (
     EpisodeWrapper,
     EvalWrapper,
     VectorWrapper,
+)
+from qdax.environments.wrappers import (
+    ActuatorStrengthWrapper,
+    CompletedEvalWrapper,
+    GravityWrapper,
 )
 
 from qdax.environments.base_wrappers import QDEnv, StateDescriptorResetWrapper
@@ -124,6 +129,8 @@ def create(
     auto_reset: bool = True,
     batch_size: Optional[int] = None,
     eval_metrics: bool = False,
+    gravity_multiplier: Optional[float] = None,
+    actuator_update: Optional[Dict[str, float]] = None,
     fixed_init_state: bool = False,
     qdax_wrappers_kwargs: Optional[List] = None,
     **kwargs: Any,
@@ -155,6 +162,16 @@ def create(
             kwargs_list = qdax_wrappers_kwargs
         for wrapper, kwargs in zip(wrappers, kwargs_list):  # type: ignore
             env = wrapper(env, base_env_name, **kwargs)  # type: ignore
+
+    if gravity_multiplier is not None:
+        env = GravityWrapper(env, gravity_multiplier)
+    if actuator_update is not None:
+        for actuator_name, strength_multiplier in actuator_update.items():
+            env = ActuatorStrengthWrapper(
+                env,
+                actuator_name=actuator_name,
+                strength_multiplier=strength_multiplier,
+            )
 
     if episode_length is not None:
         env = EpisodeWrapper(env, episode_length, action_repeat)

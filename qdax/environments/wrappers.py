@@ -4,6 +4,8 @@ import flax.struct
 import jax
 from brax.v1 import jumpy as jp
 from brax.v1.envs import Env, State, Wrapper
+from qdax.environments.locomotion_wrappers import QDSystem
+import copy
 
 
 class CompletedEvalMetrics(flax.struct.PyTreeNode):
@@ -121,3 +123,32 @@ class OffsetRewardWrapper(Wrapper):
     def step(self, state: State, action: jp.ndarray) -> State:
         state = self.env.step(state, action)
         return state.replace(reward=state.reward + self._offset)
+
+class GravityWrapper(Wrapper):
+    def __init__(self, env: Env, gravity_multiplier: float) -> None:
+        super().__init__(env)
+        self._gravity_multiplier = gravity_multiplier
+        config = copy.copy(self.env.sys.config)
+        config.gravity.z *= gravity_multiplier
+        self._config = config
+
+        self.unwrapped.sys = QDSystem(self._config)
+
+
+class ActuatorStrengthWrapper(Wrapper):
+    def __init__(
+        self, env: Env, actuator_name: str, strength_multiplier: float
+    ) -> None:
+        super().__init__(env)
+        self._actuator_name = actuator_name
+        self._strength_multiplier = strength_multiplier
+
+        config = copy.copy(self.env.sys.config)
+
+        actuators = config.actuators
+        for actuator in actuators:
+            if actuator.name == actuator_name:
+                actuator.strength *= strength_multiplier
+
+        self._config = config
+        self.unwrapped.sys = QDSystem(self._config)
