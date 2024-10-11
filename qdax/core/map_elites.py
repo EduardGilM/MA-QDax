@@ -170,6 +170,9 @@ class MAPElites:
             The updated repertoire and emitter state, with a new random key and metrics.
         """
         repertoire, emitter_state, random_key = carry
+
+        random_key, subkey = jax.random.split(random_key)
+
         (
             repertoire,
             emitter_state,
@@ -178,7 +181,7 @@ class MAPElites:
         ) = self.update(
             repertoire,
             emitter_state,
-            random_key,
+            subkey,
         )
 
         return (repertoire, emitter_state, random_key), metrics
