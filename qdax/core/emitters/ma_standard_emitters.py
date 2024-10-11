@@ -226,7 +226,7 @@ class MultiAgentEmitter(Emitter):
             ],
             axis=0,
         )
-
+        print("8: ", random_key)
         return genotypes, random_key, operation_history
 
     @property
