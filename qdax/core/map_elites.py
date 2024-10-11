@@ -169,7 +169,6 @@ class MAPElites:
             The updated repertoire and emitter state, with a new random key and metrics.
         """
         repertoire, emitter_state, random_key = carry
-        print(random_key)
         (
             repertoire,
             emitter_state,
