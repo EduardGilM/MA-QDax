@@ -125,6 +125,7 @@ class MAPElites:
             a new jax PRNG key
         """
         # generate offsprings with the emitter
+        print(random_key)
         genotypes, extra_info, random_key = self._emitter.emit(
             repertoire, emitter_state, random_key
         )
@@ -170,7 +171,7 @@ class MAPElites:
             The updated repertoire and emitter state, with a new random key and metrics.
         """
         repertoire, emitter_state, random_key = carry
-
+        print(random_key)
         (
             repertoire,
             emitter_state,
