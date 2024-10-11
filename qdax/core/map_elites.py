@@ -171,8 +171,6 @@ class MAPElites:
         """
         repertoire, emitter_state, random_key = carry
 
-        random_key, subkey = jax.random.split(random_key)
-
         (
             repertoire,
             emitter_state,
@@ -181,7 +179,7 @@ class MAPElites:
         ) = self.update(
             repertoire,
             emitter_state,
-            subkey,
+            random_key,
         )
 
         return (repertoire, emitter_state, random_key), metrics
