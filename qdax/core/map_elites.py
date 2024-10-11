@@ -129,7 +129,7 @@ class MAPElites:
         genotypes, extra_info, random_key = self._emitter.emit(
             repertoire, emitter_state, random_key
         )
-
+        print(random_key)
         # scores the offsprings
         fitnesses, descriptors, extra_scores, random_key = self._scoring_function(
             genotypes, random_key
