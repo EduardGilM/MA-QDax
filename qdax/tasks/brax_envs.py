@@ -135,7 +135,10 @@ def scoring_function_brax_envs(
 
     # Perform rollouts with each policy
     random_key = jnp.array(random_key, dtype=jnp.uint32)
+    print("random_key", random_key)
     random_key, subkey = jax.random.split(random_key)
+    print("subkey", subkey)
+    print("random_key", random_key) 
     unroll_fn = partial(
         generate_unroll,
         episode_length=episode_length,
