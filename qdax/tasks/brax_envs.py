@@ -134,7 +134,7 @@ def scoring_function_brax_envs(
     """
 
     # Perform rollouts with each policy
-    random_key, subkey = jax.random.split(random_key)
+    random_key, subkey = jax.random.split(jnp.uint32(random_key))
     unroll_fn = partial(
         generate_unroll,
         episode_length=episode_length,
