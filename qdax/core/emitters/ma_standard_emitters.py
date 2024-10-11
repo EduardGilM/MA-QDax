@@ -187,18 +187,25 @@ class MultiAgentEmitter(Emitter):
         )
 
         if n_variation > 0:
+            print("1: ", random_key)
             x1, random_key = repertoire.sample(random_key, n_variation)
+            print("2: ", random_key)
             x2, random_key = repertoire.sample(random_key, n_variation)
+            print("3: ", random_key)
             x_variation, random_key = self._variation_fn(x1, x2, random_key)
 
         if n_mutation > 0:
+            print("4: ", random_key)
             x1, random_key = repertoire.sample(random_key, n_mutation)
+            print("5: ", random_key)
             x_mutation, random_key = self._mutation_fn(x1, random_key)
 
         if n_crossplay > 0:
             # TODO: this is not efficient, we should sample only once
+            print("6: ", random_key)
             x_crossplay, random_key = repertoire.sample(random_key, n_crossplay)
             for i in agent_indices:
+                print("7: ", random_key)
                 x1, random_key = repertoire.sample(random_key, n_crossplay)
 
                 x_crossplay[i] = (
