@@ -137,14 +137,14 @@ class MAPElites:
         repertoire = repertoire.add(genotypes, descriptors, fitnesses, extra_scores)
 
         # update emitter state after scoring is made
-        #emitter_state = self._emitter.state_update(
-        #    emitter_state=emitter_state,
-        #    repertoire=repertoire,
-        #    genotypes=genotypes,
-        #    fitnesses=fitnesses,
-        #    descriptors=descriptors,
-        #    extra_scores={**extra_scores, **extra_info},
-        #)
+        emitter_state = self._emitter.state_update(
+            emitter_state=emitter_state,
+            repertoire=repertoire,
+            genotypes=genotypes,
+            fitnesses=fitnesses,
+            descriptors=descriptors,
+            extra_scores={**extra_scores, **extra_info},
+        )
 
         # update the metrics
         metrics = self._metrics_function(repertoire)
