@@ -79,10 +79,12 @@ class MultiAgentPGAMEEmitter(MultiEmitter):
             policy_delay=config.policy_delay,
         )
 
-        # define the quality emitter
-        q_emitter = QualityPGEmitter(
-            config=qpg_config, policy_network=policy_network, env=env
-        )
+        q_emitters = {}
+
+        for key, policy in policy_network.items():
+            q_emitters[key] = QualityPGEmitter(
+                config=qpg_config, policy_network=policy, env=env
+            )
 
         if config.parameter_sharing:
             # define the mixing emitter
@@ -114,4 +116,4 @@ class MultiAgentPGAMEEmitter(MultiEmitter):
                     agents_to_mutate=config.agents_to_mutate,
                 )
 
-        super().__init__(emitters=(q_emitter, ga_emitter))
+        super().__init__(emitters=(tuple(q_emitters.values()) + (ga_emitter,)))
