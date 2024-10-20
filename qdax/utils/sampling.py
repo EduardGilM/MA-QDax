@@ -149,7 +149,8 @@ def multi_sample_scoring_function(
         dict with num_samples extra_scores per individual,
         JAX random key
     """
-
+    
+    random_key = random_key[:2] 
     random_key, subkey = jax.random.split(random_key)
     keys = jax.random.split(subkey, num=num_samples)
 
