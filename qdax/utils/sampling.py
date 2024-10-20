@@ -150,6 +150,7 @@ def multi_sample_scoring_function(
         JAX random key
     """
     
+    random_key = jnp.array(random_key, dtype=jnp.uint32)
     random_key = random_key[:2] 
     random_key, subkey = jax.random.split(random_key)
     keys = jax.random.split(subkey, num=num_samples)
