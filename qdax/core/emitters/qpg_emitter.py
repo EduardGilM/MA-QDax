@@ -91,6 +91,7 @@ class QualityPGEmitter(Emitter):
             noise_clip=self._config.noise_clip,
             policy_noise=self._config.policy_noise,
             id=self._config.id,
+            env=env,
         )
 
         # Init optimizers

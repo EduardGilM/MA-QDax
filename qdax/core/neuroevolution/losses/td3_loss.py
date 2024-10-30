@@ -7,6 +7,7 @@ import jax.numpy as jnp
 
 from qdax.core.neuroevolution.buffers.buffer import Transition
 from qdax.custom_types import Action, Descriptor, Observation, Params, RNGKey
+from qdax.environments.base_wrappers import QDEnv
 
 
 def make_td3_loss_fn(
@@ -17,6 +18,7 @@ def make_td3_loss_fn(
     noise_clip: float,
     policy_noise: float,
     id: int,
+    env: QDEnv,
 ) -> Tuple[
     Callable[[Params, Params, Transition], jnp.ndarray],
     Callable[[Params, Params, Params, Transition, RNGKey], jnp.ndarray],
@@ -43,7 +45,7 @@ def make_td3_loss_fn(
     ) -> jnp.ndarray:
         """Policy loss function for TD3 agent"""
 
-        action = policy_fn(policy_params[id], transitions.obs)
+        action = policy_fn(policy_params[id], env.obs(transitions.obs)[id])
         q_value = critic_fn(
             critic_params, obs=transitions.obs, actions=action  # type: ignore
         )
