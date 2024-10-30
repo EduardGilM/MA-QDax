@@ -77,9 +77,11 @@ class MultiAgentPGAMEEmitter(MultiEmitter):
             batch_size=config.batch_size,
             soft_tau_update=config.soft_tau_update,
             policy_delay=config.policy_delay,
+            id=0,
         )
 
         q_emitters = {}
+        i = 0;
 
         if config.parameter_sharing:
             q_emitters["0"] = QualityPGEmitter(
@@ -90,6 +92,9 @@ class MultiAgentPGAMEEmitter(MultiEmitter):
                 q_emitters[key] = QualityPGEmitter(
                     config=qpg_config, policy_network=policy, env=env
                 )
+                i += 1
+                qpg_config.id = i
+                
 
         if config.parameter_sharing:
             # define the mixing emitter

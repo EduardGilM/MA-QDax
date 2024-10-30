@@ -43,6 +43,8 @@ class QualityPGConfig:
     soft_tau_update: float = 0.005
     policy_delay: int = 2
 
+    id: int = 0
+
 
 class QualityPGEmitterState(EmitterState):
     """Contains training state for the learner."""
@@ -88,6 +90,7 @@ class QualityPGEmitter(Emitter):
             discount=self._config.discount,
             noise_clip=self._config.noise_clip,
             policy_noise=self._config.policy_noise,
+            id=self._config.id,
         )
 
         # Init optimizers

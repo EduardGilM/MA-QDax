@@ -16,6 +16,7 @@ def make_td3_loss_fn(
     discount: float,
     noise_clip: float,
     policy_noise: float,
+    id: int,
 ) -> Tuple[
     Callable[[Params, Params, Transition], jnp.ndarray],
     Callable[[Params, Params, Params, Transition, RNGKey], jnp.ndarray],
@@ -42,7 +43,7 @@ def make_td3_loss_fn(
     ) -> jnp.ndarray:
         """Policy loss function for TD3 agent"""
 
-        action = policy_fn(policy_params, transitions.obs)
+        action = policy_fn(policy_params[id], transitions.obs)
         q_value = critic_fn(
             critic_params, obs=transitions.obs, actions=action  # type: ignore
         )
