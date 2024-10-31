@@ -153,15 +153,12 @@ class MapElitesRepertoire(flax.struct.PyTreeNode):
             is (num_centroids, num_descriptors).
         centroids: an array that contains the centroids of the tessellation. The array
             shape is (num_centroids, num_descriptors).
-        extra_scores: an optional tree that contains the extra scores of solutions in
-            each cell of the repertoire, ordered by centroids.
     """
 
     genotypes: Genotype
     fitnesses: Fitness
     descriptors: Descriptor
     centroids: Centroid
-    extra_scores: Optional[ExtraScores]
 
     def save(self, path: str = "./") -> None:
         """Saves the repertoire on disk in the form of .npy files.
@@ -345,21 +342,11 @@ class MapElitesRepertoire(flax.struct.PyTreeNode):
             batch_of_descriptors
         )
 
-        # update extra_scores
-        new_extra_scores = jax.tree_util.tree_map(
-            lambda repertoire_extra_scores, new_scores: repertoire_extra_scores.at[
-                batch_of_indices.squeeze(axis=-1)
-            ].set(new_scores),
-            self.extra_scores,
-            batch_of_extra_scores,
-        )
-
         return MapElitesRepertoire(
             genotypes=new_repertoire_genotypes,
             fitnesses=new_fitnesses,
             descriptors=new_descriptors,
             centroids=self.centroids,
-            extra_scores=new_extra_scores,
         )
 
     @classmethod
