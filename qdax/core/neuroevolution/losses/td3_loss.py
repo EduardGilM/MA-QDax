@@ -45,7 +45,10 @@ def make_td3_loss_fn(
     ) -> jnp.ndarray:
         """Policy loss function for TD3 agent"""
         
-        action = policy_fn(policy_params, transitions.obs)
+        print("Id:", id)
+        print("Obs:", env.map_global_obs_to_agents(transitions.obs))
+        print("Transitions obs:", transitions.obs)
+        action = policy_fn(policy_params[id], env.map_global_obs_to_agents(transitions.obs)[id])
         q_value = critic_fn(
             critic_params, obs=transitions.obs, actions=action  # type: ignore
         )
