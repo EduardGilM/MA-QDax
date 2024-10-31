@@ -402,8 +402,17 @@ class MapElitesRepertoire(flax.struct.PyTreeNode):
         # retrieve one genotype from the population
         first_genotype = jax.tree_util.tree_map(lambda x: x[0], genotypes)
 
+        # retrieve one extra_score if available
+        first_extra_scores = None
+        if extra_scores is not None:
+            first_extra_scores = jax.tree_util.tree_map(lambda x: x[0], extra_scores)
+
         # create a repertoire with default values
-        repertoire = cls.init_default(genotype=first_genotype, centroids=centroids)
+        repertoire = cls.init_default(
+            genotype=first_genotype,
+            centroids=centroids,
+            extra_scores_example=first_extra_scores,
+        )
 
         # add initial population to the repertoire
         new_repertoire = repertoire.add(genotypes, descriptors, fitnesses, extra_scores)
@@ -415,6 +424,7 @@ class MapElitesRepertoire(flax.struct.PyTreeNode):
         cls,
         genotype: Genotype,
         centroids: Centroid,
+        extra_scores_example: Optional[ExtraScores] = None,
     ) -> MapElitesRepertoire:
         """Initialize a Map-Elites repertoire with an initial population of
         genotypes. Requires the definition of centroids that can be computed
@@ -446,9 +456,19 @@ class MapElitesRepertoire(flax.struct.PyTreeNode):
         # default descriptor is all zeros
         default_descriptors = jnp.zeros_like(centroids)
 
+        # initialize default extra_scores if provided
+        if extra_scores_example is not None:
+            default_extra_scores = jax.tree_util.tree_map(
+                lambda x: jnp.zeros(shape=(num_centroids,) + x.shape[1:], dtype=x.dtype),
+                extra_scores_example,
+            )
+        else:
+            default_extra_scores = None
+
         return cls(
             genotypes=default_genotypes,
             fitnesses=default_fitnesses,
             descriptors=default_descriptors,
             centroids=centroids,
+            extra_scores=default_extra_scores,
         )
